@@ -14,8 +14,10 @@ and return the noise to be subtracted in that diffusion reverse step
 2. The _original_ noise schedule for the diffusion model.
 3. Data that you would like to inpaint, **in the same distribution as the training data**.
 
-Additionally, a GPU is highly recommended, since this technique requires hundreds
+Additionally, a **GPU is highly recommended**, since this technique requires hundreds
 of forward passes of a neural network. It will be incredibly slow without a GPU.
+In my informal tests, a 256x256 image model, for 1000 diffusion steps takes about 2 minutes 
+with a GPU and 2 hours without one.
 
 This technique doesn't work well on data different from what it was trained on.
 For example, here's what happens when you try to inpaint a landscape image
@@ -47,6 +49,8 @@ repository
 |`beta`|elements of the variance schedule. How much noise is being added at each step.|
 |`alpha`|1-beta|
 |`alpha_cumprod`|cumulative product of alphas, from 0 to t|
+|jump length `j`|number of diffusion steps to jump in a resample|
+|`r`|number of resamplings|
 
 ## Contributions
 Contributions are welcome and encouraged! If you see a way to improve this repo, or have
