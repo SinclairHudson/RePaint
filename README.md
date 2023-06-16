@@ -25,8 +25,6 @@ This technique doesn't work well on data different from what it was trained on.
 For example, here's what happens when you try to inpaint a landscape image
 using a diffusion model trained on the CelebA-HQ dataset (faces):
 
-# TODO
-
 ## Dependencies
 
 This project uses [Anaconda](https://www.anaconda.com/) to manage dependencies.
