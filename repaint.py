@@ -1,61 +1,23 @@
 """
-implements the main repaint idea
+implements the main repaint algorithm
 """
 from torchvision import transforms
 import torch
 import PIL.Image
 from diffusers import UNet2DModel, DDPMScheduler
-from dataclasses import dataclass
 from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import List
+from wrappers import Model, CustomScheduler
 
-## scheduler must provide the following fields:
-# timesteps 999 to 0
-# betas
 
-@dataclass
-class CustomScheduler:
-    def __init__(self, timesteps: torch.Tensor, betas: torch.Tensor):
-        assert len(timesteps) == len(betas)
-        self.timesteps = timesteps
-        self.betas = betas
-        # TODO verify this
-        self.alphas = 1.0 - self.betas
-        self.alphas_cumprod = torch.cumprod(self.alphas, dim=0)
-        self.alphas_cumprod_prev = torch.roll(self.alphas_cumprod, 1)
-        self.alphas_cumprod_prev[0] = 1.0
-
-        self.sqrt_one_minus_alphas_cumprod = torch.sqrt(1.0 - self.alphas_cumprod)
-        self.posterior_variance = self.betas * (1. - self.alphas_cumprod_prev) / (1. - self.alphas_cumprod)
-        self.sqrt_recip_alphas = torch.sqrt(1.0 / self.alphas)
-
-    @classmethod
-    def from_DDPMScheduler(cls, ddpm_scheduler: DDPMScheduler):
-        return cls(ddpm_scheduler.timesteps, ddpm_scheduler.betas)
-
-class Model:
-    def __init__(self, model: UNet2DModel):
-        self.model = model
-
-    def to(self, device: torch.device):
-        self.model.to(device)
-        return self
-
-    def __call__(self, x, t):
-        """
-        :param x: input image
-        :param t: timestep
-        :return: predicted noise at the current timestep, to be subtracted
-        """
-        return self.model(x, t)["sample"]
-
-reverse_transforms = transforms.Compose([
+sample_to_pil = transforms.Compose([
+        transforms.Lambda(lambda t: t.squeeze(0)), # CHW to HWC
         transforms.Lambda(lambda t: t.permute(1, 2, 0)), # CHW to HWC
         transforms.Lambda(lambda t: (t + 1) * 127.5), # [-1, 1] to [0, 255]
         transforms.Lambda(lambda t: torch.clamp(t, 0, 255)),
-        transforms.Lambda(lambda t: t.numpy().astype(np.uint8)),
+        transforms.Lambda(lambda t: t.cpu().detach().numpy().astype(np.uint8)),
         transforms.ToPILImage(),
     ])
 
@@ -140,11 +102,13 @@ if __name__ == "__main__":
         transforms.Resize((256, 256)),
         transforms.ToTensor(),
         transforms.Lambda(lambda t: (t * 2) - 1),
+        transforms.Lambda(lambda t: t.unsqueeze(0))
     ])
 
     mask_transform = transforms.Compose([
         transforms.Resize((256, 256)),
         transforms.ToTensor(),
+        transforms.Lambda(lambda t: t.unsqueeze(0))
     ])
 
     image = PIL.Image.open("img/celeba_01.jpg")
@@ -153,7 +117,8 @@ if __name__ == "__main__":
     model = Model(model).to(device)
     scheduler = CustomScheduler.from_DDPMScheduler(scheduler)
 
-    result = repaint(data_transform(image).unsqueeze(0).to(device), mask_transform(mask).unsqueeze(0).to(device),
+    result = repaint(data_transform(image).to(device),
+                     mask_transform(mask).to(device),
                      model, scheduler)
-    plt.imshow(reverse_transforms(result.cpu()[0]))
+    plt.imshow(sample_to_pil(result))
     plt.show()

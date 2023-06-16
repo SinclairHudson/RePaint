@@ -2,6 +2,8 @@
 
 Implementation of the CVPR 2022 Paper "[RePaint](https://arxiv.org/pdf/2201.09865v4.pdf)":
 
+![ten samples](img/ten_samples.png)
+
 If you use this repository, please cite the original authors.
 These ideas are not mine, I'm just implementing them in a way that makes sense to me.
 
@@ -43,7 +45,7 @@ This is a small guide to explain the naming conventions and terms used in the
 repository
 |Term|Explanation|
 |---|---|
-|t|the current timestep in the diffusion process|
+|`t`|the current timestep in the diffusion process|
 |forward step|One step in noising the image. t -> t+1. Not to be confused with the _forward pass_ of a neural network|
 |reverse step|one step in de-noising the image, handled by the neural network. t -> t-1.|
 |`beta`|elements of the variance schedule. How much noise is being added at each step.|
