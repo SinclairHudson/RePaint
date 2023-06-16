@@ -5,7 +5,8 @@ Implementation of the CVPR 2022 Paper "[RePaint](https://arxiv.org/pdf/2201.0986
 ![ten samples](img/ten_samples.png)
 
 If you use this repository, please cite the original authors.
-These ideas are not mine, I'm just implementing them in a way that makes sense to me.
+These ideas are not mine, I'm just implementing them in a way that makes sense to me,
+and in a way that cna be easily extended and applied.
 
 ## Requirements
 
