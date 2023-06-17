@@ -8,13 +8,39 @@ from diffusers import UNet2DModel, DDPMScheduler
 from repaint import sample_to_pil, repaint
 from wrappers import Model, CustomScheduler
 
-def plot_10_images(list_of_images: List[PIL.Image.Image]):
+def plot_10_images(list_of_images: List[PIL.Image.Image], path:str=None):
     plt.tight_layout()
     fig, axs = plt.subplots(2, 5, figsize=(20, 8))
     for i, ax in enumerate(axs.flatten()):
         ax.axis('off')
         ax.imshow(list_of_images[i])
-    plt.show()
+
+    if path is not None:
+        plt.savefig(path)
+    else:
+        plt.show()
+
+def plot_diffusion_pred(original: PIL.Image.Image, mask: PIL.Image.Image,
+                        pred: PIL.Image.Image, path:str=None):
+    plt.tight_layout()
+    plt.subplots(1, 3, figsize=(20, 8))
+    plt.subplot(1, 3, 1)
+    plt.axis('off')
+    plt.title("original image")
+    plt.imshow(original)
+    plt.subplot(1, 3, 2)
+    plt.axis('off')
+    plt.title("mask")
+    plt.imshow(mask)
+    plt.subplot(1, 3, 3)
+    plt.axis('off')
+    plt.title("generated image")
+    plt.imshow(pred)
+
+    if path is not None:
+        plt.savefig(path)
+    else:
+        plt.show()
 
 def generate_n_samples(image: torch.Tensor, mask: torch.Tensor,
                        model: Model, scheduler: CustomScheduler, n:int=10):
@@ -46,13 +72,18 @@ if __name__ == "__main__":
         transforms.Lambda(lambda t: t.unsqueeze(0))
     ])
 
-    image = PIL.Image.open("img/celeba_01.jpg")
-    mask = PIL.Image.open("img/half_mask.png")
+    image = PIL.Image.open("img/celeba_00.jpg")
+    mask = PIL.Image.open("img/000013.png")
 
     model = Model(model).to(device)
     scheduler = CustomScheduler.from_DDPMScheduler(scheduler)
 
-    images = generate_n_samples(data_transform(image).to(device),
-                                mask_transform(mask).to(device),
-                                model, scheduler, n=10)
-    plot_10_images(images)
+    # images = generate_n_samples(data_transform(image).to(device),
+                                # mask_transform(mask).to(device),
+                                # model, scheduler, n=10)
+    repainted_image = repaint(data_transform(image).to(device),
+                              mask_transform(mask).to(device),
+                              model, scheduler)
+    pil_result = sample_to_pil(repainted_image)
+    plot_diffusion_pred(image, mask, pil_result, "img/repainted_single.png")
+

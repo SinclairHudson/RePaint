@@ -2,6 +2,10 @@
 
 Implementation of the CVPR 2022 Paper "[RePaint](https://arxiv.org/pdf/2201.09865v4.pdf)":
 
+![single sample](img/repainted_single.png)
+
+The method is a stochastic generative inpainting algorithm.
+
 ![ten samples](img/ten_samples.png)
 
 If you use this repository, please cite the original authors.
