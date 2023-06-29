@@ -26,6 +26,7 @@ sample_to_pil = transforms.Compose([
 def single_reverse_step(model: Model, x: torch.Tensor, t: int, S: CustomScheduler) -> torch.Tensor:
     """
     applies the model to go from timestep t to t-1
+    See Algorithm 2 of https://arxiv.org/pdf/2006.11239.pdf
     :param model: the model that predicts the noise
     :param x: the data at timestep t
     :param t: the current timestep
