@@ -27,6 +27,9 @@ class CustomScheduler:
         return cls(ddpm_scheduler.timesteps, ddpm_scheduler.betas)
 
 class Model:
+    """
+    A wrapper class from a diffusion model, to simplify the API.
+    """
     def __init__(self, model: UNet2DModel):
         self.model = model
 

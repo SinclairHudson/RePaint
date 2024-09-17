@@ -1,3 +1,4 @@
+"""Generate visuals that showcase the technique."""
 from torchvision import transforms
 from typing import List
 import torch
@@ -8,8 +9,12 @@ from diffusers import UNet2DModel, DDPMScheduler
 from repaint import sample_to_pil, repaint
 from wrappers import Model, CustomScheduler
 
-def plot_10_images(list_of_images: List[PIL.Image.Image], path:str=None):
+def plot_10_images(list_of_images: List[PIL.Image.Image], path:str=None) -> None:
+    """
+    Plot 10 images in a 2x5 grid.
+    """
     plt.tight_layout()
+    assert len(list_of_images) == 10
     fig, axs = plt.subplots(2, 5, figsize=(20, 8))
     for i, ax in enumerate(axs.flatten()):
         ax.axis('off')
@@ -21,7 +26,10 @@ def plot_10_images(list_of_images: List[PIL.Image.Image], path:str=None):
         plt.show()
 
 def plot_diffusion_pred(original: PIL.Image.Image, mask: PIL.Image.Image,
-                        pred: PIL.Image.Image, path:str=None):
+                        pred: PIL.Image.Image, path:str=None) -> None:
+    """
+    Plot 3 images side by side.
+    """
     plt.tight_layout()
     plt.subplots(1, 3, figsize=(20, 8))
     plt.subplot(1, 3, 1)

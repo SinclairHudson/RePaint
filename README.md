@@ -10,7 +10,7 @@ The method is a stochastic generative inpainting algorithm.
 
 If you use this repository, please cite the original authors.
 These ideas are not mine, I'm just implementing them in a way that makes sense to me,
-and in a way that cna be easily extended and applied.
+and in a way that can be **easily extended and applied**.
 
 ## Requirements
 
